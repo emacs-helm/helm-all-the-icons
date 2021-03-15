@@ -26,6 +26,7 @@
 
 (require 'cl-lib)
 (require 'helm)
+(require 'all-the-icons)
 
 (defvar helm-all-the-icons-alist '((all-the-icons-data/alltheicons-alist . all-the-icons-alltheicon)
                                    (all-the-icons-data/fa-icon-alist . all-the-icons-faicon)
