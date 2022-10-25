@@ -77,4 +77,4 @@
 
 (provide 'helm-all-the-icons)
 
-;;; helm-all-the-icons ends here
+;;; helm-all-the-icons.el ends here
