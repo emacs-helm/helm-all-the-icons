@@ -73,8 +73,7 @@ function."
   (interactive)
   (require 'all-the-icons)
   (helm :sources (helm-all-the-icons-sources)
-        :buffer "*helm all the icons*"
-        :candidate-number-limit nil))
+        :buffer "*helm all the icons*"))
 
 (provide 'helm-all-the-icons)
 
