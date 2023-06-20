@@ -29,40 +29,44 @@
 (require 'all-the-icons)
 
 (defvar helm-all-the-icons-alist (mapcar (lambda (family)
-                                           `(,family . ,(intern-soft
-                                                         (format "all-the-icons-%s" family))))
+                                           `(,family
+                                             ,(intern-soft (format "all-the-icons-%s-data" family))
+                                             ,(intern-soft (format "all-the-icons-%s" family))))
                                          all-the-icons-font-families))
 
-(defun helm-all-the-icons-build-source (family fn)
-  (let* ((data    (all-the-icons--read-candidates-for-family family))
+(defun helm-all-the-icons-build-source (family dfn ifn)
+  "Build source for FAMILY using data fn DFN and insert fn IFN.
+DFN is all-the-icons-<FAMILY>-data and IFN is all-the-icons-<FAMILY>
+function."
+  (let* ((data    (funcall dfn))
          (max-len (cl-loop for (s . _i) in data
                            maximize (length s))))
     (helm-build-sync-source (symbol-name family)
       :candidates (lambda ()
                     (cl-loop for (name . icon) in data
-                             for fmt-icon = (funcall fn name)
+                             for fmt-icon = (funcall ifn name)
                              collect (cons (concat (substring-no-properties name)
                                                    (make-string
                                                     (1+ (- max-len (length name))) ? )
                                                    (format "%s" fmt-icon))
                                            (cons name icon))))
       :action `(("insert icon" . (lambda (candidate)
-                                   (let ((fmt-icon (funcall ',fn (car candidate))))
+                                   (let ((fmt-icon (funcall ',ifn (car candidate))))
                                      (insert (format "%s" fmt-icon)))))
                 ("insert code for icon" . (lambda (candidate)
-                                            (insert (format "(%s \"%s\")" ',fn (car candidate)))))
+                                            (insert (format "(%s \"%s\")" ',ifn (car candidate)))))
                 ("insert name" . (lambda (candidate)
                                    (insert (car candidate))))
                 ("insert raw icon" . (lambda (candidate)
                                        (insert (cdr candidate))))
                 ;; FIXME: yank is inserting the raw icon, not the display.
                 ("kill icon" . (lambda (candidate)
-                                 (let ((fmt-icon (funcall ',fn (car candidate))))
+                                 (let ((fmt-icon (funcall ',ifn (car candidate))))
                                    (kill-new (format "%s" fmt-icon)))))))))
 
 (defun helm-all-the-icons-sources ()
-  (cl-loop for (db . fn) in helm-all-the-icons-alist
-           collect (helm-all-the-icons-build-source db fn)))
+  (cl-loop for (family dfn fn) in helm-all-the-icons-alist
+           collect (helm-all-the-icons-build-source family dfn fn)))
 
 ;;;###autoload
 (defun helm-all-the-icons ()
