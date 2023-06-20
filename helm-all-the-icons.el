@@ -28,23 +28,20 @@
 (require 'helm)
 (require 'all-the-icons)
 
-(defvar helm-all-the-icons-alist '((all-the-icons-data/alltheicons-alist . all-the-icons-alltheicon)
-                                   (all-the-icons-data/fa-icon-alist . all-the-icons-faicon)
-                                   (all-the-icons-data/file-icon-alist . all-the-icons-fileicon)
-                                   (all-the-icons-data/octicons-alist . all-the-icons-octicon)
-                                   (all-the-icons-data/material-icons-alist . all-the-icons-material)
-                                   (all-the-icons-data/weather-icons-alist . all-the-icons-wicon)))
+(defvar helm-all-the-icons-alist (mapcar (lambda (family)
+                                           `(,family . ,(intern-soft
+                                                         (format "all-the-icons-%s" family))))
+                                         all-the-icons-font-families))
 
-(defun helm-all-the-icons-build-source (data fn)
-  (let ((max-len (cl-loop for (s . _i) in (symbol-value data)
-                          maximize (length s))))
-    (helm-build-sync-source (replace-regexp-in-string
-                             "-alist\\'" ""
-                             (cadr (split-string (symbol-name data) "/")))
+(defun helm-all-the-icons-build-source (family fn)
+  (let* ((data    (all-the-icons--read-candidates-for-family family))
+         (max-len (cl-loop for (s . _i) in data
+                           maximize (length s))))
+    (helm-build-sync-source (symbol-name family)
       :candidates (lambda ()
-                    (cl-loop for (name . icon) in (symbol-value data)
+                    (cl-loop for (name . icon) in data
                              for fmt-icon = (funcall fn name)
-                             collect (cons (concat name
+                             collect (cons (concat (substring-no-properties name)
                                                    (make-string
                                                     (1+ (- max-len (length name))) ? )
                                                    (format "%s" fmt-icon))
