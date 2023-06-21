@@ -34,6 +34,7 @@
                                              ,(intern-soft (format "all-the-icons-%s" family))))
                                          all-the-icons-font-families))
 
+(defvar helm-all-the-icons--cache (make-hash-table))
 (defun helm-all-the-icons-build-source (family dfn ifn)
   "Build source for FAMILY using data fn DFN and insert fn IFN.
 DFN is all-the-icons-<FAMILY>-data and IFN is all-the-icons-<FAMILY>
@@ -42,14 +43,18 @@ function."
          (max-len (cl-loop for (s . _i) in data
                            maximize (length s))))
     (helm-build-sync-source (symbol-name family)
-      :candidates (lambda ()
-                    (cl-loop for (name . icon) in data
-                             for fmt-icon = (funcall ifn name)
-                             collect (cons (concat (substring-no-properties name)
-                                                   (make-string
-                                                    (1+ (- max-len (length name))) ? )
-                                                   (format "%s" fmt-icon))
-                                           (cons name icon))))
+      :init (lambda ()
+              (unless (gethash family helm-all-the-icons--cache)
+                (puthash family
+                         (cl-loop for (name . icon) in data
+                                  for fmt-icon = (funcall ifn name)
+                                  collect (cons (concat (substring-no-properties name)
+                                                        (make-string
+                                                         (1+ (- max-len (length name))) ? )
+                                                        (format "%s" fmt-icon))
+                                                (cons name icon)))
+                         helm-all-the-icons--cache)))
+      :candidates (lambda () (gethash family helm-all-the-icons--cache))
       :action `(("insert icon" . (lambda (candidate)
                                    (let ((fmt-icon (funcall ',ifn (car candidate))))
                                      (insert (format "%s" fmt-icon)))))
@@ -69,9 +74,10 @@ function."
            collect (helm-all-the-icons-build-source family dfn fn)))
 
 ;;;###autoload
-(defun helm-all-the-icons ()
-  (interactive)
+(defun helm-all-the-icons (&optional refresh)
+  (interactive "P")
   (require 'all-the-icons)
+  (when refresh (clrhash helm-all-the-icons--cache))
   (helm :sources (helm-all-the-icons-sources)
         :buffer "*helm all the icons*"))
 
