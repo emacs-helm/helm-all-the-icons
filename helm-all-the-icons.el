@@ -35,7 +35,7 @@
                                          all-the-icons-font-families))
 
 (defvar helm-all-the-icons--cache (make-hash-table))
-(defun helm-all-the-icons-build-source (family dfn ifn)
+(defun helm-all-the-icons-build-source (family dfn ifn &optional reporter)
   "Build source for FAMILY using data fn DFN and insert fn IFN.
 DFN is all-the-icons-<FAMILY>-data and IFN is all-the-icons-<FAMILY>
 function."
@@ -48,6 +48,7 @@ function."
                 (puthash family
                          (cl-loop for (name . icon) in data
                                   for fmt-icon = (funcall ifn name)
+                                  when reporter do (progress-reporter-update reporter)
                                   collect (cons (concat (substring-no-properties name)
                                                         (make-string
                                                          (1+ (- max-len (length name))) ? )
@@ -69,9 +70,16 @@ function."
                                  (let ((fmt-icon (funcall ',ifn (car candidate))))
                                    (kill-new (format "%s" fmt-icon)))))))))
 
+(defmacro helm-all-the-icons-with-progress (&rest body)
+  `(let ((reporter (make-progress-reporter "Updating icons cache...")))
+     (progn
+       ,@body)))
+
 (defun helm-all-the-icons-sources ()
-  (cl-loop for (family dfn fn) in helm-all-the-icons-alist
-           collect (helm-all-the-icons-build-source family dfn fn)))
+  (cl-declare (special reporter))
+  (helm-all-the-icons-with-progress
+   (cl-loop for (family dfn fn) in helm-all-the-icons-alist
+            collect (helm-all-the-icons-build-source family dfn fn reporter))))
 
 ;;;###autoload
 (defun helm-all-the-icons (&optional refresh)
