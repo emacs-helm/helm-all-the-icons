@@ -4,7 +4,7 @@
 ;; Copyright (C) 2021 Thierry Volpiatto <thievol@posteo.net>
 
 ;; Version: 1.0
-;; URL: https://github.com/emacs-helm-helm-all-the-icons
+;; URL: https://github.com/emacs-helm/helm-all-the-icons
 
 ;; Compatibility: GNU Emacs 24.3+
 ;; Package-Requires: ((emacs "24.3"))
