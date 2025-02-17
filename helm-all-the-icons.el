@@ -41,8 +41,8 @@
 (defun helm-all-the-icons-build-source (provider family dfn ifn &optional reporter)
   "Build source for FAMILY using data fn DFN and insert fn IFN.
 PROVIDER is one of nerd-icons or all-the-icons.
-DFN is (all-the-icons/nerd)-<FAMILY>-data and IFN is (all-the/nerd)-icons-<FAMILY>
-function."
+DFN is (all-the-icons/nerd)-<FAMILY>-data
+and IFN is (all-the/nerd)-icons-<FAMILY> function."
   (let* ((data    (funcall dfn))
          (max-len (cl-loop for (s . _i) in data
                            maximize (length s)))
