@@ -104,7 +104,7 @@ function."
                   nerd-icons-glyph-sets)))
   (when refresh (clrhash helm-nerd-icons--cache))
   (helm :sources (helm-all-the-icons-sources 'nerd-icons)
-        :buffer "*helm all the icons*"))
+        :buffer "*helm nerd icons*"))
 
 ;;;###autoload
 (defun helm-all-the-icons (&optional refresh)
