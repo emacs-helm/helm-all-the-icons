@@ -105,7 +105,8 @@ and IFN is (all-the/nerd)-icons-<FAMILY> function."
                   nerd-icons-glyph-sets)))
   (when refresh (clrhash helm-nerd-icons--cache))
   (helm :sources (helm-all-the-icons-sources 'nerd-icons)
-        :buffer "*helm nerd icons*"))
+        :buffer "*helm nerd icons*"
+        :candidate-number-limit nil))
 
 ;;;###autoload
 (defun helm-all-the-icons (&optional refresh)
@@ -120,7 +121,8 @@ and IFN is (all-the/nerd)-icons-<FAMILY> function."
                   all-the-icons-font-families)))
   (when refresh (clrhash helm-all-the-icons--cache))
   (helm :sources (helm-all-the-icons-sources 'all-the-icons)
-        :buffer "*helm all the icons*"))
+        :buffer "*helm all the icons*"
+        :candidate-number-limit nil))
 
 (provide 'helm-all-the-icons)
 
