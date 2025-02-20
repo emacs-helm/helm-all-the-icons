@@ -83,7 +83,6 @@ and IFN is (all-the/nerd)-icons-<FAMILY> function."
        ,@body)))
 
 (defun helm-all-the-icons-sources (provider)
-  (cl-declare (special reporter))
   (helm-all-the-icons-with-progress
    (cl-loop with alist = (helm-acase provider
                            (all-the-icons helm-all-the-icons-alist)
