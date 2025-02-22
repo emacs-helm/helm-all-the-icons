@@ -77,19 +77,14 @@ and IFN is (all-the/nerd)-icons-<FAMILY> function."
                                  (let ((fmt-icon (funcall ',ifn (car candidate))))
                                    (kill-new (format "%s" fmt-icon)))))))))
 
-(defmacro helm-all-the-icons-with-progress (&rest body)
-  `(let ((reporter (make-progress-reporter "Updating icons cache...")))
-     (progn
-       ,@body)))
-
 (defun helm-all-the-icons-sources (provider)
-  (helm-all-the-icons-with-progress
-   (cl-loop with alist = (helm-acase provider
-                           (all-the-icons helm-all-the-icons-alist)
-                           (nerd-icons helm-nerd-icons-alist))
-            for (family dfn fn) in alist
-            collect (helm-all-the-icons-build-source
-                     provider family dfn fn reporter))))
+  (let ((reporter (make-progress-reporter "Updating icons cache...")))
+    (cl-loop with alist = (helm-acase provider
+                            (all-the-icons helm-all-the-icons-alist)
+                            (nerd-icons helm-nerd-icons-alist))
+             for (family dfn fn) in alist
+             collect (helm-all-the-icons-build-source
+                      provider family dfn fn reporter))))
 
 ;;;###autoload
 (defun helm-nerd-icons (&optional refresh)
